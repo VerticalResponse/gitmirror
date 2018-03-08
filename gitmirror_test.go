@@ -1,12 +1,24 @@
 package main
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha1"
 	"errors"
 	"io"
+  "net/http/httptest"
+	"os/exec"
 	"testing"
 )
+
+func TestRunCommands(t *testing.T) {
+	ctx := context.TODO()
+	cmds := []*exec.Cmd{
+		exec.CommandContext(ctx, "blah"),
+	}
+  rr := httptest.NewRecorder()
+	runCommands(rr, false, "asdf", cmds)
+}
 
 func TestHMACCompare(t *testing.T) {
 	tests := []struct {

@@ -67,6 +67,7 @@ func runCommands(w http.ResponseWriter, bg bool,
 	}
 
 	for _, cmd := range cmds {
+		log.Printf("cmd.Path = %v", cmd.Path)
 		if exists(cmd.Path) {
 			log.Printf("Running %v in %v", cmd.Args, abspath)
 			fmt.Fprintf(stdout, "# Running %v\n", cmd.Args)
@@ -85,7 +86,8 @@ func runCommands(w http.ResponseWriter, bg bool,
 						"\n[gitmirror internal error:  %v]\n", err)
 				}
 			}
-
+		} else {
+			log.Printf("Command path does not exist: %v", cmd.Path)
 		}
 	}
 
@@ -154,7 +156,7 @@ func queueCommand(w http.ResponseWriter, bg bool,
 }
 
 func updateGit(ctx context.Context, w http.ResponseWriter, section string, bg bool, payload []byte) bool {
-
+	log.Printf("Inside updateGit")
 	abspath := filepath.Join(*thePath, section)
 
 	if !exists(abspath) {
@@ -237,6 +239,7 @@ func createRepo(ctx context.Context, w http.ResponseWriter, section string,
 
 func doUpdate(ctx context.Context, w http.ResponseWriter, path string,
 	bg bool, payload []byte) {
+	log.Printf("Inside doUpdate")
 	if bg {
 		go updateGit(context.Background(), w, path, bg, payload)
 		w.WriteHeader(201)
@@ -271,6 +274,7 @@ func checkHMAC(h hash.Hash, sig string) bool {
 }
 
 func handlePost(w http.ResponseWriter, req *http.Request, bg bool) {
+	log.Printf("Inside handlePost")
 	// We're teeing the form parsing into a sha1 HMAC so we can
 	// authenticate what we actually parsed (if we *secret is set,
 	// anyway)
